@@ -1,9 +1,9 @@
 import numpy as np
 import tensorflow as tf
 import random
-sentences=np.load('sentences.npy')
-labels=np.load('labelsa.npy')
-import movies_model
+sentences=np.load('encoded_sentences.npy')
+labels=np.load('encoded_labels.npy')
+
 
 train_data=int(len(sentences)*0.85)
 
@@ -47,7 +47,7 @@ def evaluate(model):
     accurac=[]
 
     for i in data_te:
-        out=sess.run(model.out,feed_dict={model.placeholder['input']:[i[0]],model.placeholder['output']:[i[1]],model.placeholder['output']:1})
+        out=sess.run(model.out,feed_dict={model.placeholder['input']:[i[0]],model.placeholder['output']:[i[1]],model.placeholder['mode']:1})
 
         accurac.append(out['accuracy'])
         print(out['prediction'],'vs',[i[1]])
@@ -75,12 +75,13 @@ def train(model):
 
             for m in input_data:
                 input_x.append(m[0])
+                
                 labels.append(m[1])
 
             input_x=padding(input_x)
             labels=labels
 
-            out_put,_=sess.run([model.out,model.train_op],feed_dict={model.placeholder['input']:input_x,model.placeholder['output']:labels,model.placeholder['output']:0})
+            out_put,_=sess.run([model.out,model.train_op],feed_dict={model.placeholder['input']:input_x,model.placeholder['output']:labels,model.placeholder['mode']:0})
 
             print("iterations",j,"loss",out_put['loss'],"accuracy",out_put['accuracy'])
 
@@ -88,47 +89,11 @@ def train(model):
 
 if "__main__" == __name__:
 
-    model =movies_model.movies_classifier()
+    model =movies_classifier()
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         pre_train=train(model)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            # sess=tf.get_default_session()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

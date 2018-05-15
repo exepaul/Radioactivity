@@ -3,12 +3,11 @@ import tensorflow as tf
 import random
 sentences=np.load('encoded_sentences.npy')
 labels=np.load('encoded_labels.npy')
-
+# import movies_model
 
 train_data=int(len(sentences)*0.85)
 
-batch_size = 2
-iteration=int(len(sentences)//batch_size)
+batch_size = 50
 epoch=200
 sequences=[i for i in zip(sentences,labels)]
 
@@ -17,7 +16,8 @@ sequences=[i for i in zip(sentences,labels)]
 train_data_final=sequences[:train_data]
 
 test_data=sequences[train_data:]
-
+iteration=int(len(train_data_final)//batch_size)
+print(iteration)
 np.random.shuffle(train_data_final)
 
 def padding(vector_data):
@@ -70,15 +70,18 @@ def train(model):
             input_data=train_data_final[j*batch_size:(j+1)*batch_size]
 
 
+
             input_x=[]
             labels=[]
 
             for m in input_data:
                 input_x.append(m[0])
-                
+
                 labels.append(m[1])
 
+
             input_x=padding(input_x)
+
             labels=labels
 
             out_put,_=sess.run([model.out,model.train_op],feed_dict={model.placeholder['input']:input_x,model.placeholder['output']:labels,model.placeholder['mode']:0})
@@ -94,6 +97,3 @@ if "__main__" == __name__:
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         pre_train=train(model)
-
-
-
